@@ -67,7 +67,7 @@
 # add_widget(). Это позволяет комбинировать разные варианты разметки в
 # случае, если возможностей одного слоя недостаточно:
 
-#from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -82,23 +82,27 @@ Window.size = (320, 480)
 class Calculator(App):
     def build(self):
         self.title = "Калькулятор"
-        
-        main_layout = GridLayout(cols=4, spacing=10, padding=10)
+        main_layout = BoxLayout(orientation="vertical")
+        screen_layout = BoxLayout(size_hint=(1,0.15) )
         self.input_box = TextInput(multiline=False, readonly=True, halign="right", font_size=30)
-        main_layout.add_widget(self.input_box)
+        screen_layout.add_widget(self.input_box)
+
+        keyboard_layout = GridLayout(cols=4, spacing=10, padding=10)
         buttons = [
             'C', '(', ')', '/',
             '7', '8', '9', '*',
             '4', '5', '6', '-',
             '1', '2', '3', '+',
-            '0', '.', '=', ''
+            '0', '.', '='
         ]
 
         for button_text in buttons:
             button = Button(text=button_text, font_size=20)
             button.bind(on_press=self.button_press)
-            main_layout.add_widget(button)
-        
+            keyboard_layout.add_widget(button)
+
+        main_layout.add_widget(screen_layout)
+        main_layout.add_widget(keyboard_layout)
         return main_layout
         
     #логика нажатия кнопок
