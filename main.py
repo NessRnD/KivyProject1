@@ -67,12 +67,13 @@
 # add_widget(). Это позволяет комбинировать разные варианты разметки в
 # случае, если возможностей одного слоя недостаточно:
 
-from kivy.uix.boxlayout import BoxLayout
+#from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.app import App
 from kivy.config import Config
+from kivy.uix.textinput import TextInput
 Config.set('graphics', 'resizable', False)
 
 from kivy.core.window import Window
@@ -80,49 +81,40 @@ Window.size = (320, 480)
 
 class Calculator(App):
     def build(self):
-        superBox = BoxLayout(orientation='vertical')
+        self.title = "Калькулятор"
+        
+        main_layout = GridLayout(cols=4, spacing=10, padding=10)
+        self.input_box = TextInput(multiline=False, readonly=True, halign="right", font_size=30)
+        main_layout.add_widget(self.input_box)
+        buttons = [
+            'C', '(', ')', '/',
+            '7', '8', '9', '*',
+            '4', '5', '6', '-',
+            '1', '2', '3', '+',
+            '0', '.', '=', ''
+        ]
 
-        # окно вывода информации калькулятора
-        screen = Label(text="0", size_hint=(1,0.1))
+        for button_text in buttons:
+            button = Button(text=button_text, font_size=20)
+            button.bind(on_press=self.button_press)
+            main_layout.add_widget(button)
+        
+        return main_layout
+        
+    #логика нажатия кнопок
+    def button_press(self, instance):
+        button_text = instance.text
 
-        num_buttons = GridLayout(rows=6, cols=5)
-        btn1 = Button(text="MR")
-        btn2 = Button(text="MC")
-        btn3 = Button(text="MS")
-        btn4 = Button(text="M+")
-        btn5 = Button(text="M-")
-
-        btn6 = Button(text='<-')
-        btn7 = Button(text='CE')
-        btn8 = Button(text='C')
-        btn9 = Button(text=chr(177))
-        btn10 = Button(text='V')
-
-        btn11 = Button(text='7')
-        btn12 = Button(text='8')
-        btn13 = Button(text='9')
-        btn14 = Button(text='/')
-        btn15 = Button(text='%')
-
-        btn16 = Button(text='4')
-        btn17 = Button(text='5')
-        btn18 = Button(text='6')
-        btn19 = Button(text='*')
-        btn20 = Button(text='1/x')
-
-        num_buttons.add_widget(btn1)
-        num_buttons.add_widget(btn2)
-        num_buttons.add_widget(btn3)
-        num_buttons.add_widget(btn4)
-        num_buttons.add_widget(btn5)
-        num_buttons.add_widget(btn6)
-        num_buttons.add_widget(btn7)
-        num_buttons.add_widget(btn8)
-        num_buttons.add_widget(btn9)
-        num_buttons.add_widget(btn10)
-
-        superBox.add_widget(screen)
-        superBox.add_widget(num_buttons)
-        return superBox
-
-Calculator().run()
+        if button_text == '=':
+            try:
+                result = str(eval(self.input_box.text))
+                self.input_box.text = result
+            except:
+                self.input_box.text = "Error"
+        elif button_text == 'C':
+            self.input_box.text = ''
+        else:
+            self.input_box.text += button_text
+            
+if __name__ == "__main__":
+    Calculator().run()
